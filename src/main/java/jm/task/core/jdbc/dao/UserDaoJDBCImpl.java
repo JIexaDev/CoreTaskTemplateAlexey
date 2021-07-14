@@ -41,7 +41,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void saveUser(String name, String lastName, byte age) {
         try (Connection connection = Util.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.execute("insert into users (name, lastName, age)" +
+            statement.executeUpdate("insert into users (name, lastName, age)" +
                     " values('" + name + "', '" + lastName + "', " + age + ");");
             System.out.println("User с именем " + name + " добавлен в базу данных!");
         } catch (SQLException throwables) {
@@ -52,7 +52,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void removeUserById(long id) {
         try (Connection connection = Util.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.execute("delete from users where id=" + id + ";");
+            statement.executeUpdate("delete from users where id=" + id + ";");
         } catch (SQLException throwables) {
             System.out.println("Не удалось удалить строку с данным id");
         }
@@ -81,7 +81,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void cleanUsersTable() {
         try (Connection connection = Util.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.execute("delete from users;");
+            statement.executeUpdate("truncate table users;");
         } catch (SQLException throwables) {
             System.out.println("Не удалось очистить таблицу");
         }
