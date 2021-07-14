@@ -10,14 +10,21 @@ public class Util {
     private final static String NAME = "root";
     private final static String PASS = "root";
 
-    public static Connection getConnection() {
+    public static void registerDriver() {
         try {
             Driver driver = new com.mysql.cj.jdbc.Driver();
             DriverManager.registerDriver(driver);
+        } catch (SQLException throwables) {
+            System.err.println("Не удалось зарегестрировать драйвер!");
+        }
+    }
+
+    public static Connection getConnection() {
+        try {
             return DriverManager.getConnection(URL, NAME, PASS);
         } catch (SQLException throwables) {
             System.err.println("Не удалось установить соединение с БД!");
+            return null;
         }
-        return null;
     }
 }
