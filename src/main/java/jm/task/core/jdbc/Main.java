@@ -4,11 +4,10 @@ import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.service.*;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         User user1 = new User("Jack", "Johnson", (byte) 23);
         User user2 = new User("John", "Jackson", (byte) 32);
         User user3 = new User("Ricardo", "Milos", (byte) 40);
@@ -25,7 +24,7 @@ public class Main {
         userService.removeUserById(2);
         List<User> allUsers = userService.getAllUsers();
         System.out.println(allUsers);
-//        userService.cleanUsersTable();
-//        userService.dropUsersTable();
+        userService.cleanUsersTable();
+        userService.dropUsersTable();
     }
 }

@@ -21,7 +21,9 @@ public class Util {
 
     public static Connection getConnection() {
         try {
-            return DriverManager.getConnection(URL, NAME, PASS);
+            Connection connection = DriverManager.getConnection(URL, NAME, PASS);
+            connection.setAutoCommit(false);
+            return connection;
         } catch (SQLException throwables) {
             System.err.println("Не удалось установить соединение с БД!");
             return null;

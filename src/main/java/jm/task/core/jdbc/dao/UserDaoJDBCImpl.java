@@ -21,8 +21,14 @@ public class UserDaoJDBCImpl implements UserDao {
                     "  `lastName` VARCHAR(45) NULL,\n" +
                     "  `age` TINYINT NULL,\n" +
                     "  PRIMARY KEY (`id`));");
+            connection.commit();
         } catch (SQLException throwables) {
             System.out.println("Не удалось создать таблицу");
+            try {
+                Util.getConnection().rollback();
+            } catch (SQLException e) {
+                System.err.println("При попытке роллбэка произошла ошибка!");;
+            }
         }
     }
 
@@ -30,8 +36,14 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Connection connection = Util.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("drop table users;");
+            connection.commit();
         } catch (SQLException throwables) {
             System.out.println("Не удалось удалить таблицу");
+            try {
+                Util.getConnection().rollback();
+            } catch (SQLException e) {
+                System.err.println("При попытке роллбэка произошла ошибка!");;
+            }
         }
     }
 
@@ -43,9 +55,15 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
+            connection.commit();
             System.out.println("User с именем " + name + " добавлен в базу данных!");
         } catch (SQLException throwables) {
             System.out.println("Не удалось добавить строку");
+            try {
+                Util.getConnection().rollback();
+            } catch (SQLException e) {
+                System.err.println("При попытке роллбэка произошла ошибка!");
+            }
         }
     }
 
@@ -55,8 +73,14 @@ public class UserDaoJDBCImpl implements UserDao {
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
+            connection.commit();
         } catch (SQLException throwables) {
             System.out.println("Не удалось удалить строку с данным id");
+            try {
+                Util.getConnection().rollback();
+            } catch (SQLException e) {
+                System.err.println("При попытке роллбэка произошла ошибка!");
+            }
         }
     }
 
@@ -73,9 +97,15 @@ public class UserDaoJDBCImpl implements UserDao {
                 user.setAge(resultSet.getByte("age"));
                 userList.add(user);
             }
+            connection.commit();
             return userList;
         } catch (SQLException throwables) {
             System.out.println("Не удалось получить список юзеров");
+            try {
+                Util.getConnection().rollback();
+            } catch (SQLException e) {
+                System.err.println("При попытке роллбэка произошла ошибка!");;
+            }
             return null;
         }
     }
@@ -84,8 +114,14 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Connection connection = Util.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate("truncate table users;");
+            connection.commit();
         } catch (SQLException throwables) {
             System.out.println("Не удалось очистить таблицу");
+            try {
+                Util.getConnection().rollback();
+            } catch (SQLException e) {
+                System.err.println("При попытке роллбэка произошла ошибка!");;
+            }
         }
     }
 }
