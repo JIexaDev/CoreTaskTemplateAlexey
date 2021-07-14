@@ -43,25 +43,37 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        try (Connection connection = Util.getConnection();
-             Statement statement = connection.createStatement()) {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = Util.getConnection();
+            statement = connection.createStatement();
             statement.execute("drop table users;");
             connection.commit();
         } catch (SQLException throwables) {
             System.out.println("Не удалось удалить таблицу");
             try {
-                Util.getConnection().rollback();
+                connection.rollback();
             } catch (SQLException e) {
                 System.err.println("При попытке роллбэка произошла ошибка!");
-                ;
+            }
+        } finally {
+            try {
+                connection.close();
+                statement.close();
+            } catch (SQLException throwables) {
+                System.err.println("Не удалось закрыть соединение!");
             }
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        try (Connection connection = Util.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("insert into users (name, lastName, age)" +
-                     " values (?, ?, ?)")) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = Util.getConnection();
+            preparedStatement = connection.prepareStatement("insert into users (name, lastName, age)" +
+                    " values (?, ?, ?)");
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
@@ -71,34 +83,55 @@ public class UserDaoJDBCImpl implements UserDao {
         } catch (SQLException throwables) {
             System.out.println("Не удалось добавить строку");
             try {
-                Util.getConnection().rollback();
+                connection.rollback();
             } catch (SQLException e) {
                 System.err.println("При попытке роллбэка произошла ошибка!");
+            }
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException throwables) {
+                System.err.println("Не удалось закрыть соединение!");
             }
         }
     }
 
     public void removeUserById(long id) {
-        try (Connection connection = Util.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("delete from users where id=?")) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = Util.getConnection();
+            preparedStatement = connection.prepareStatement("delete from users where id=?");
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
             connection.commit();
         } catch (SQLException throwables) {
             System.out.println("Не удалось удалить строку с данным id");
             try {
-                Util.getConnection().rollback();
+                connection.rollback();
             } catch (SQLException e) {
                 System.err.println("При попытке роллбэка произошла ошибка!");
+            }
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException throwables) {
+                System.err.println("Не удалось закрыть соединение!");
             }
         }
     }
 
     public List<User> getAllUsers() {
-        try (Connection connection = Util.getConnection();
-             Statement statement = connection.createStatement()) {
+        Connection connection = null;
+        Statement statement = null;
+        List<User> userList = null;
+        try {
+            connection = Util.getConnection();
+            statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from users;");
-            List<User> userList = new ArrayList<>();
+            userList = new ArrayList<>();
             while (resultSet.next()) {
                 User user = new User();
                 user.setId(resultSet.getLong("id"));
@@ -108,31 +141,45 @@ public class UserDaoJDBCImpl implements UserDao {
                 userList.add(user);
             }
             connection.commit();
-            return userList;
         } catch (SQLException throwables) {
             System.out.println("Не удалось получить список юзеров");
             try {
-                Util.getConnection().rollback();
+                connection.rollback();
             } catch (SQLException e) {
                 System.err.println("При попытке роллбэка произошла ошибка!");
-                ;
             }
-            return null;
+        } finally {
+            try {
+                connection.close();
+                statement.close();
+            } catch (SQLException throwables) {
+                System.err.println("Не удалось закрыть соединение!");
+            }
         }
+        return userList;
     }
 
     public void cleanUsersTable() {
-        try (Connection connection = Util.getConnection();
-             Statement statement = connection.createStatement()) {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = Util.getConnection();
+            statement = connection.createStatement();
             statement.executeUpdate("truncate table users;");
             connection.commit();
         } catch (SQLException throwables) {
             System.out.println("Не удалось очистить таблицу");
             try {
-                Util.getConnection().rollback();
+                connection.rollback();
             } catch (SQLException e) {
                 System.err.println("При попытке роллбэка произошла ошибка!");
-                ;
+            }
+        } finally {
+            try {
+                connection.close();
+                statement.close();
+            } catch (SQLException throwables) {
+                System.err.println("Не удалось закрыть соединение!");
             }
         }
     }
