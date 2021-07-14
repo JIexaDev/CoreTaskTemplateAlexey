@@ -13,8 +13,11 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
-        try (Connection connection = Util.getConnection();
-             Statement statement = connection.createStatement()) {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = Util.getConnection();
+            statement = connection.createStatement();
             statement.execute("CREATE TABLE `my_schema`.`users` (\n" +
                     "  `id` BIGINT NOT NULL AUTO_INCREMENT,\n" +
                     "  `name` VARCHAR(45) NULL,\n" +
@@ -25,9 +28,16 @@ public class UserDaoJDBCImpl implements UserDao {
         } catch (SQLException throwables) {
             System.out.println("Не удалось создать таблицу");
             try {
-                Util.getConnection().rollback();
+                connection.rollback();
             } catch (SQLException e) {
-                System.err.println("При попытке роллбэка произошла ошибка!");;
+                System.err.println("При попытке роллбэка произошла ошибка!");
+            }
+        } finally {
+            try {
+                connection.close();
+                statement.close();
+            } catch (SQLException throwables) {
+                System.err.println("Не удалось закрыть соединение!");
             }
         }
     }
@@ -42,15 +52,16 @@ public class UserDaoJDBCImpl implements UserDao {
             try {
                 Util.getConnection().rollback();
             } catch (SQLException e) {
-                System.err.println("При попытке роллбэка произошла ошибка!");;
+                System.err.println("При попытке роллбэка произошла ошибка!");
+                ;
             }
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        String sql = "insert into users (name, lastName, age) values (?, ?, ?)";
         try (Connection connection = Util.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement("insert into users (name, lastName, age)" +
+                     " values (?, ?, ?)")) {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
@@ -68,9 +79,8 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        String sql = "delete from users where id=?";
         try (Connection connection = Util.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement("delete from users where id=?")) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
             connection.commit();
@@ -104,7 +114,8 @@ public class UserDaoJDBCImpl implements UserDao {
             try {
                 Util.getConnection().rollback();
             } catch (SQLException e) {
-                System.err.println("При попытке роллбэка произошла ошибка!");;
+                System.err.println("При попытке роллбэка произошла ошибка!");
+                ;
             }
             return null;
         }
@@ -120,7 +131,8 @@ public class UserDaoJDBCImpl implements UserDao {
             try {
                 Util.getConnection().rollback();
             } catch (SQLException e) {
-                System.err.println("При попытке роллбэка произошла ошибка!");;
+                System.err.println("При попытке роллбэка произошла ошибка!");
+                ;
             }
         }
     }

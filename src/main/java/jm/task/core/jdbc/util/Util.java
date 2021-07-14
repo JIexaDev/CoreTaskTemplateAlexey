@@ -10,21 +10,13 @@ public class Util {
     private final static String NAME = "root";
     private final static String PASS = "root";
 
-    public static void registerDriver() {
-        try {
-            Driver driver = new com.mysql.cj.jdbc.Driver();
-            DriverManager.registerDriver(driver);
-        } catch (SQLException throwables) {
-            System.err.println("Не удалось зарегестрировать драйвер!");
-        }
-    }
-
     public static Connection getConnection() {
         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(URL, NAME, PASS);
             connection.setAutoCommit(false);
             return connection;
-        } catch (SQLException throwables) {
+        } catch (SQLException | ClassNotFoundException exception) {
             System.err.println("Не удалось установить соединение с БД!");
             return null;
         }
