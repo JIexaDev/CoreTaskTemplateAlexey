@@ -3,6 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import java.util.List;
 
@@ -69,9 +70,9 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = Util.getSessionFactory().openSession()) {
             try {
                 session.beginTransaction();
-                User user = session.get(User.class, id);
-                session.delete(user);
-                // переделать в hql в один executeUpdate
+                Query query = session.createQuery("delete User where id =: currentId");
+                query.setParameter("currentId", id);
+                query.executeUpdate();
                 session.getTransaction().commit();
             } catch (Exception e) {
                 session.getTransaction().rollback();
