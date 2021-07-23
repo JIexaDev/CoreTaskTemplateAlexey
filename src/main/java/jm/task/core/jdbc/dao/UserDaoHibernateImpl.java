@@ -17,17 +17,17 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = Util.getSessionFactory().openSession()) {
             try {
                 session.beginTransaction();
-                session.createSQLQuery("CREATE TABLE `my_schema`.`users` (\n" +
+                session.createSQLQuery("CREATE TABLE if not exists `my_schema`.`users` (\n" +
                         "  `id` BIGINT NOT NULL AUTO_INCREMENT,\n" +
                         "  `name` VARCHAR(45) NULL,\n" +
                         "  `lastName` VARCHAR(45) NULL,\n" +
                         "  `age` TINYINT NULL,\n" +
                         "  PRIMARY KEY (`id`));")
                         .executeUpdate();
+                session.getTransaction().commit();
             } catch (Exception e) {
                 session.getTransaction().rollback();
             }
-            session.getTransaction().commit();
         } catch (Exception e) {
             System.out.println("Не удалось создать таблицу!");
         }
@@ -38,11 +38,11 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = Util.getSessionFactory().openSession()) {
             try {
                 session.beginTransaction();
-                session.createSQLQuery("drop table users;").executeUpdate();
+                session.createSQLQuery("drop table if exists users;").executeUpdate();
+                session.getTransaction().commit();
             } catch (Exception e) {
                 session.getTransaction().rollback();
             }
-            session.getTransaction().commit();
         } catch (Exception e) {
             System.out.println("Не удалось удалить таблицу!");
         }
@@ -55,10 +55,10 @@ public class UserDaoHibernateImpl implements UserDao {
             try {
                 session.beginTransaction();
                 session.save(user);
+                session.getTransaction().commit();
             } catch (Exception e) {
                 session.getTransaction().rollback();
             }
-            session.getTransaction().commit();
         } catch (Exception e) {
             System.out.println("Не удалось сохранить юзера!");
         }
@@ -71,10 +71,11 @@ public class UserDaoHibernateImpl implements UserDao {
                 session.beginTransaction();
                 User user = session.get(User.class, id);
                 session.delete(user);
+                // переделать в hql в один executeUpdate
+                session.getTransaction().commit();
             } catch (Exception e) {
                 session.getTransaction().rollback();
             }
-            session.getTransaction().commit();
         } catch (Exception e) {
             System.out.println("Не удалось удалить юзера!");
         }
@@ -89,10 +90,10 @@ public class UserDaoHibernateImpl implements UserDao {
                 userList = session.createSQLQuery("select * from users;")
                         .addEntity(User.class)
                         .list();
+                session.getTransaction().commit();
             } catch (Exception e) {
                 session.getTransaction().rollback();
             }
-            session.getTransaction().commit();
         } catch (Exception e) {
             System.out.println("Не удалось получить список юзеров!");
         }
@@ -105,10 +106,10 @@ public class UserDaoHibernateImpl implements UserDao {
             try {
                 session.beginTransaction();
                 session.createSQLQuery("truncate table users;").executeUpdate();
+                session.getTransaction().commit();
             } catch (Exception e) {
                 session.getTransaction().rollback();
             }
-            session.getTransaction().commit();
         } catch (Exception e) {
             System.out.println("Не удалось очистить таблицу!");
         }
